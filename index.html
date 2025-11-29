@@ -142,6 +142,7 @@
             }, [selectedBloodGroup, searchQuery, donors]);
 
             const handleCall = (number) => {
+                const telNumber = number.startsWith('+') ? number : '+' + number;
                 window.location.href = `tel:${number}`;
             };
 
