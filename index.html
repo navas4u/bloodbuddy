@@ -1,212 +1,276 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blood Buddy - Online Blood Group Directory</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .olive-gradient { background: linear-gradient(to right, #6b8e23, #556b2f); }
-        .blue-gradient { background: linear-gradient(to right, #87ceeb, #5dade2); }
-        .bg-gradient-custom { background: linear-gradient(to bottom, #f0f8ff, #f5fffa); }
-        .border-olive { border-left-color: #6b8e23; }
-        .text-yellow { color: #ffe135; }
-        .sticky-top { position: sticky; top: 0; z-index: 50; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blood Buddy - Online Blood Group Directory</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .olive-gradient { background: linear-gradient(to right, #6b8e23, #556b2f); }
+    .blue-gradient { background: linear-gradient(to right, #87ceeb, #5dade2); }
+    .bg-gradient-custom { background: linear-gradient(to bottom, #f0f8ff, #f5fffa); }
+  </style>
 </head>
 <body class="bg-gradient-custom min-h-screen">
-<div id="app"></div>
+  <div id="app"></div>
 
-<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
 
-<script type="text/babel">
-const { useState, useEffect } = React;
+  <script type="text/babel">
+    const { useState, useEffect } = React;
 
-// ===== SVG Components =====
-const Search = ({ size=24, ...props }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>);
-const Phone = ({ size=24, ...props }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>);
-const Share2 = ({ size=24, ...props }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>);
-const Heart = ({ size=24, fill="none", ...props }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2" {...props}><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>);
-const Users = ({ size=24, ...props }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>);
-const Building2 = ({ size=24, ...props }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>);
-const MapPin = ({ size=24, ...props }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>);
-const AlertCircle = ({ size=24, ...props }) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>);
+    // --- SVG ICONS ---
+    const Users = ({ size = 24 }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+    );
 
-const BloodDonorApp = () => {
-    const [donors, setDonors] = useState([]);
-    const [filteredDonors, setFilteredDonors] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [selectedBloodGroup, setSelectedBloodGroup] = useState('');
-    const [searchQuery, setSearchQuery] = useState('');
-    const [activeTab, setActiveTab] = useState('search');
-    const [showBeABuddy, setShowBeABuddy] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
+    const Phone = ({ size = 24 }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+      </svg>
+    );
 
-    const bloodGroups = ['A +ve','A -ve','B +ve','B -ve','AB +ve','AB -ve','O +ve','O -ve'];
-    const donorsPerPage = 5; // pagination
+    const Share2 = ({ size = 24 }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="18" cy="5" r="3"></circle>
+        <circle cx="6" cy="12" r="3"></circle>
+        <circle cx="18" cy="19" r="3"></circle>
+        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+      </svg>
+    );
 
-    const bloodBanks = [
+    const Heart = ({ size = 24, fill="none" }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      </svg>
+    );
+
+    const Building2 = ({ size = 24 }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/>
+        <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/>
+        <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/>
+        <path d="M10 6h4"/>
+        <path d="M10 10h4"/>
+        <path d="M10 14h4"/>
+        <path d="M10 18h4"/>
+      </svg>
+    );
+
+    const MapPin = ({ size = 24 }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+        <circle cx="12" cy="10" r="3"/>
+      </svg>
+    );
+
+    const AlertCircle = ({ size=24 }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+    );
+
+    const Search = ({ size=24 }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+      </svg>
+    );
+
+    // --- APP COMPONENT ---
+    const BloodDonorApp = () => {
+      const [donors, setDonors] = useState([]);
+      const [filteredDonors, setFilteredDonors] = useState([]);
+      const [loading, setLoading] = useState(true);
+      const [selectedBloodGroup, setSelectedBloodGroup] = useState('');
+      const [searchQuery, setSearchQuery] = useState('');
+      const [activeTab, setActiveTab] = useState('search');
+      const [showBeABuddy, setShowBeABuddy] = useState(false);
+      const [currentPage, setCurrentPage] = useState(1);
+      const itemsPerPage = 5;
+
+      const bloodGroups = ['A +ve', 'A -ve', 'B +ve', 'B -ve', 'AB +ve', 'AB -ve', 'O +ve', 'O -ve'];
+
+      const bloodBanks = [
         { name: 'Thrissur Govt Medical College Blood Bank', phone: '+91-0487-2421340', place: 'Thrissur' },
         { name: 'Caritas Hospital Blood Bank', phone: '+91-0484-2383333', place: 'Kottayam' },
         { name: 'Lakeshore Hospital Blood Bank', phone: '+91-0484-2701032', place: 'Kochi' },
         { name: 'IMA Blood Bank', phone: '+91-0487-2333518', place: 'Thrissur' },
         { name: 'Kerala Institute of Medical Sciences', phone: '+91-0471-3041400', place: 'Trivandrum' }
-    ];
+      ];
 
-    useEffect(() => {
+      useEffect(() => {
         fetch('donors.json')
-        .then(res => res.json())
-        .then(data => { setDonors(data); setFilteredDonors(data); setLoading(false); })
-        .catch(err => { console.error(err); setLoading(false); });
-    }, []);
+          .then(res => res.json())
+          .then(data => {
+            setDonors(data);
+            setFilteredDonors(data);
+            setLoading(false);
+          }).catch(err => {
+            console.error('Error loading donors:', err);
+            setLoading(false);
+          });
+      }, []);
 
-    useEffect(() => {
+      useEffect(() => {
         let filtered = [...donors];
-        if (selectedBloodGroup) filtered = filtered.filter(d => d.bloodGroup === selectedBloodGroup);
-        if (searchQuery) {
-            const q = searchQuery.toLowerCase();
-            filtered = filtered.filter(d => d.name.toLowerCase().includes(q) || d.place.toLowerCase().includes(q) || d.number.includes(q));
+        if(selectedBloodGroup) filtered = filtered.filter(d=>d.bloodGroup===selectedBloodGroup);
+        if(searchQuery) {
+          const q = searchQuery.toLowerCase();
+          filtered = filtered.filter(d =>
+            d.name.toLowerCase().includes(q) ||
+            d.place.toLowerCase().includes(q) ||
+            d.number.includes(q)
+          );
         }
         setFilteredDonors(filtered);
-        setCurrentPage(1); // reset page when filter changes
-    }, [selectedBloodGroup, searchQuery, donors]);
+        setCurrentPage(1);
+      }, [selectedBloodGroup, searchQuery, donors]);
 
-    const handleCall = (number) => { window.location.href = `tel:${number}`; };
-    const handleShare = (donor) => {
-        const message = `Blood Donor Contact:\n\nName: ${donor.name}\nBlood Group: ${donor.bloodGroup}\nNumber: ${donor.number}\nPlace: ${donor.place}\n\nConnect via Blood Buddy App`;
-        if (navigator.share) { navigator.share({ title:'Blood Donor Contact', text: message }); } 
-        else { window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank'); }
-    };
+      const totalPages = Math.ceil(filteredDonors.length/itemsPerPage);
+      const currentDonors = filteredDonors.slice((currentPage-1)*itemsPerPage, currentPage*itemsPerPage);
 
-    const DonorCard = ({ donor }) => (
+      const handleCall = (number) => window.location.href=`tel:${number}`;
+      const handleShare = (donor) => {
+        const message = `Blood Donor Contact:\nName: ${donor.name}\nBlood Group: ${donor.bloodGroup}\nNumber: ${donor.number}\nPlace: ${donor.place}`;
+        if(navigator.share) navigator.share({title:'Blood Donor', text:message});
+        else window.open(`https://wa.me/?text=${encodeURIComponent(message)}`,'_blank');
+      };
+
+      const DonorCard = ({ donor }) => (
         <div className="bg-white rounded-xl shadow-md p-4 mb-3 border-l-4 border-olive hover:shadow-lg transition-shadow">
-            <div className="flex justify-between items-start mb-3">
-                <div className="flex-1">
-                    <h3 className="font-bold text-lg text-gray-800">{donor.name}</h3>
-                    <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                        <MapPin size={14} />
-                        <span>{donor.place}</span>
-                    </div>
-                </div>
-                <span className="text-white px-3 py-1 rounded-full text-sm font-semibold whitespace-nowrap ml-2 olive-gradient">{donor.bloodGroup}</span>
+          <div className="flex justify-between items-start mb-3">
+            <div className="flex-1">
+              <h3 className="font-bold text-lg text-gray-800">{donor.name}</h3>
+              <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
+                <MapPin size={14} />
+                <span>{donor.place}</span>
+              </div>
             </div>
-            <div className="text-gray-700 mb-3 font-medium">{donor.number}</div>
-            <div className="flex gap-2">
-                <button onClick={()=>handleCall(donor.number)} className="flex-1 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all hover:opacity-90" style={{backgroundColor:'#6b8e23'}}><Phone size={18}/> Call</button>
-                <button onClick={()=>handleShare(donor)} className="flex-1 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all hover:opacity-90" style={{backgroundColor:'#87ceeb'}}><Share2 size={18}/> Share</button>
-            </div>
+            <span className="text-white px-3 py-1 rounded-full text-sm font-semibold whitespace-nowrap ml-2 olive-gradient">{donor.bloodGroup}</span>
+          </div>
+          <div className="text-gray-700 mb-3 font-medium">{donor.number}</div>
+          <div className="flex gap-2">
+            <button onClick={()=>handleCall(donor.number)} className="flex-1 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all hover:opacity-90" style={{backgroundColor:'#6b8e23'}}><Phone size={18}/> Call</button>
+            <button onClick={()=>handleShare(donor)} className="flex-1 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all hover:opacity-90" style={{backgroundColor:'#87ceeb'}}><Share2 size={18}/> Share</button>
+          </div>
         </div>
-    );
+      );
 
-    const BeABuddyForm = () => {
+      const BeABuddyForm = () => {
         const [formData,setFormData] = useState({name:'',bloodGroup:'',number:'',place:''});
         const handleSubmit = () => {
-            if(!formData.name||!formData.bloodGroup||!formData.number||!formData.place){alert('Please fill in all fields'); return;}
-            alert(`Thank you for registering, ${formData.name}! Your details will be added to our blood donor database.`);
-            setFormData({name:'',bloodGroup:'',number:'',place:''});
-            setShowBeABuddy(false);
+          if(!formData.name||!formData.bloodGroup||!formData.number||!formData.place){
+            alert('Please fill all fields'); return;
+          }
+          alert(`Thanks ${formData.name}! We'll notify you when needed.`);
+          setFormData({name:'',bloodGroup:'',number:'',place:''});
+          setShowBeABuddy(false);
         };
         return (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                <div className="bg-white rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
-                    <div className="flex items-center gap-3 mb-6">
-                        <Heart size={32} style={{color:'#6b8e23'}}/>
-                        <h2 className="text-2xl font-bold text-gray-800">Be a Blood Buddy</h2>
-                    </div>
-                    <div>
-                        <div className="mb-4"><label className="block text-gray-700 font-semibold mb-2">Name</label><input type="text" value={formData.name} onChange={e=>setFormData({...formData,name:e.target.value})} placeholder="Enter your full name" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"/></div>
-                        <div className="mb-4"><label className="block text-gray-700 font-semibold mb-2">Blood Group</label><select value={formData.bloodGroup} onChange={e=>setFormData({...formData,bloodGroup:e.target.value})} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"><option value="">Select blood group</option>{bloodGroups.map(bg=><option key={bg} value={bg}>{bg}</option>)}</select></div>
-                        <div className="mb-4"><label className="block text-gray-700 font-semibold mb-2">Phone Number</label><input type="tel" value={formData.number} onChange={e=>setFormData({...formData,number:e.target.value})} placeholder="Enter your phone number" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"/></div>
-                        <div className="mb-6"><label className="block text-gray-700 font-semibold mb-2">Place</label><input type="text" value={formData.place} onChange={e=>setFormData({...formData,place:e.target.value})} placeholder="Enter your location" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"/></div>
-                        <div className="flex gap-3">
-                            <button onClick={()=>setShowBeABuddy(false)} className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 py-3 px-4 rounded-lg font-semibold transition-colors">Cancel</button>
-                            <button onClick={handleSubmit} className="flex-1 text-white py-3 px-4 rounded-lg font-semibold transition-all hover:opacity-90 olive-gradient">Register</button>
-                        </div>
-                    </div>
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center gap-3 mb-6"><Heart size={32} style={{color:'#6b8e23'}}/><h2 className="text-2xl font-bold">Be a Blood Buddy</h2></div>
+              <div className="space-y-4">
+                <div><label>Name</label><input type="text" value={formData.name} onChange={e=>setFormData({...formData,name:e.target.value})} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-300"/></div>
+                <div><label>Blood Group</label><select value={formData.bloodGroup} onChange={e=>setFormData({...formData,bloodGroup:e.target.value})} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-300"><option value="">Select</option>{bloodGroups.map(bg=><option key={bg} value={bg}>{bg}</option>)}</select></div>
+                <div><label>Phone Number</label><input type="tel" value={formData.number} onChange={e=>setFormData({...formData,number:e.target.value})} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-300"/></div>
+                <div><label>Place</label><input type="text" value={formData.place} onChange={e=>setFormData({...formData,place:e.target.value})} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-300"/></div>
+                <div className="flex gap-3">
+                  <button onClick={()=>setShowBeABuddy(false)} className="flex-1 bg-gray-300 py-3 rounded-lg">Cancel</button>
+                  <button onClick={handleSubmit} className="flex-1 bg-green-600 text-white py-3 rounded-lg">Register</button>
                 </div>
+              </div>
             </div>
+          </div>
         );
+      };
+
+      return (
+        <div className="min-h-screen relative">
+          {/* Header */}
+          <div className="text-white p-6 shadow-lg olive-gradient text-center">
+            <h1 className="text-4xl font-bold">Blood Buddy</h1>
+            <p className="text-yellow-400">Online Blood Group Directory</p>
+          </div>
+
+          {/* Tabs */}
+          <div className="flex bg-white shadow-md sticky top-0 z-40">
+            <button onClick={()=>setActiveTab('search')} className="flex-1 py-4 font-semibold transition-colors" style={{color:activeTab==='search'?'#87ceeb':'#666', borderBottom:activeTab==='search'?'2px solid #87ceeb':'none'}}><Users className="inline mr-2"/> Find Donors</button>
+            <button onClick={()=>setActiveTab('bloodbanks')} className="flex-1 py-4 font-semibold transition-colors" style={{color:activeTab==='bloodbanks'?'#87ceeb':'#666', borderBottom:activeTab==='bloodbanks'?'2px solid #87ceeb':'none'}}><Building2 className="inline mr-2"/> Blood Banks</button>
+          </div>
+
+          {/* Filters */}
+          {activeTab==='search' &&
+          <div className="p-4 sticky top-[64px] bg-gradient-custom z-30">
+            <div className="mb-4">
+              <select value={selectedBloodGroup} onChange={e=>setSelectedBloodGroup(e.target.value)} className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-300">
+                <option value="">All Blood Groups ({donors.length})</option>
+                {bloodGroups.map(bg=><option key={bg} value={bg}>{bg}</option>)}
+              </select>
+            </div>
+            <div className="relative mb-4">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"/>
+              <input type="text" value={searchQuery} onChange={e=>setSearchQuery(e.target.value)} placeholder="Search by name, place or number" className="w-full pl-10 py-3 border rounded-lg focus:ring-2 focus:ring-blue-300"/>
+            </div>
+          </div>
+          }
+
+          {/* Content */}
+          <div className="p-4 max-w-4xl mx-auto mb-24">
+            {loading ? <p className="text-center">Loading...</p> :
+            activeTab==='search' ? <>
+              {currentDonors.length ? currentDonors.map(d=><DonorCard key={d.number} donor={d}/>) : <p className="text-center text-gray-500 mt-10">No donors found.</p>}
+              {/* Pagination */}
+              {totalPages>1 &&
+                <div className="flex justify-center mt-4 gap-2 flex-wrap">
+                  <button disabled={currentPage===1} onClick={()=>setCurrentPage(p=>p-1)} className="px-3 py-1 rounded border bg-white hover:bg-gray-100">&lt; Prev</button>
+                  {[...Array(totalPages)].map((_,i)=>
+                    <button key={i} onClick={()=>setCurrentPage(i+1)} className={`px-3 py-1 rounded border ${currentPage===i+1?'bg-blue-400 text-white':'bg-white hover:bg-gray-100'}`}>{i+1}</button>
+                  )}
+                  <button disabled={currentPage===totalPages} onClick={()=>setCurrentPage(p=>p+1)} className="px-3 py-1 rounded border bg-white hover:bg-gray-100">Next &gt;</button>
+                </div>
+              }
+            </> :
+            activeTab==='bloodbanks' ? bloodBanks.map((b,i)=>(
+              <div key={i} className="bg-white rounded-xl shadow-md p-4 mb-3 border-l-4 border-blue-400 hover:shadow-lg transition-shadow">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="font-bold text-lg">{b.name}</h3>
+                  <span className="text-sm text-gray-600">{b.place}</span>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={()=>handleCall(b.phone)} className="flex-1 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all hover:opacity-90" style={{backgroundColor:'#6b8e23'}}><Phone size={18}/> Call</button>
+                  <button onClick={()=>handleShare(b)} className="flex-1 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all hover:opacity-90" style={{backgroundColor:'#87ceeb'}}><Share2 size={18}/> Share</button>
+                </div>
+              </div>
+            )) : null
+            }
+          </div>
+
+          {/* Be a Buddy Button */}
+          <button onClick={()=>setShowBeABuddy(true)} className="fixed bottom-24 right-5 bg-red-600 text-white px-5 py-3 rounded-full shadow-lg z-50 hover:opacity-90">Be a Buddy</button>
+
+          {showBeABuddy && <BeABuddyForm/>}
+
+          {/* Footer */}
+          <footer className="fixed bottom-0 w-full bg-gray-100 text-center py-1 text-sm text-gray-600 border-t">
+            Developed by Navas Abdulkader
+          </footer>
+        </div>
+      );
     };
 
-    // pagination logic
-    const indexOfLastDonor = currentPage * donorsPerPage;
-    const indexOfFirstDonor = indexOfLastDonor - donorsPerPage;
-    const currentDonors = filteredDonors.slice(indexOfFirstDonor,indexOfLastDonor);
-    const totalPages = Math.ceil(filteredDonors.length / donorsPerPage);
-
-    return (
-        <div className="min-h-screen relative">
-            {/* Header */}
-            <div className="text-white p-6 shadow-lg olive-gradient">
-                <div className="flex justify-center">
-                    <div className="text-center">
-                        <h1 className="text-4xl font-bold mb-1">Blood Buddy</h1>
-                        <p className="text-sm text-yellow">Online Blood Group Directory</p>
-                    </div>
-                </div>
-            </div>
-
-            {/* Tabs */}
-            <div className="flex bg-white shadow-md sticky-top">
-                <button onClick={()=>setActiveTab('search')} className="flex-1 py-4 font-semibold transition-colors" style={{color: activeTab==='search'?'#87ceeb':'#666', borderBottom: activeTab==='search'?'2px solid #87ceeb':'none'}}><Users className="inline mr-2" size={20}/>Find Donors</button>
-                <button onClick={()=>setActiveTab('bloodbanks')} className="flex-1 py-4 font-semibold transition-colors" style={{color: activeTab==='bloodbanks'?'#87ceeb':'#666', borderBottom: activeTab==='bloodbanks'?'2px solid #87ceeb':'none'}}><Building2 className="inline mr-2" size={20}/>Blood Banks</button>
-            </div>
-
-            {/* Filters */}
-            {activeTab==='search' && <div className="sticky-top bg-white z-40 p-4 shadow-md">
-                <div className="mb-4">
-                    <label className="block text-gray-700 font-semibold mb-2">Select Blood Group</label>
-                    <select value={selectedBloodGroup} onChange={e=>setSelectedBloodGroup(e.target.value)} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 text-lg">
-                        <option value="">All Blood Groups ({donors.length} donors)</option>
-                        {bloodGroups.map(bg=><option key={bg} value={bg}>{bg}</option>)}
-                    </select>
-                </div>
-                <div className="mb-2">
-                    <input type="text" value={searchQuery} onChange={e=>setSearchQuery(e.target.value)} placeholder="Search by name, place, or number" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"/>
-                </div>
-            </div>}
-
-            {/* Content */}
-            <div className="p-4">
-                {loading ? <p>Loading donors...</p> :
-                activeTab==='search' ?
-                <>
-                    {currentDonors.length ? currentDonors.map(d=> <DonorCard key={d.number} donor={d} />) : <p className="text-gray-600 text-center">No donors found</p>}
-                    {/* Pagination */}
-                    {totalPages>1 && <div className="flex justify-center items-center gap-2 mt-4 flex-wrap">
-                        {[...Array(totalPages)].map((_,i)=><button key={i} onClick={()=>setCurrentPage(i+1)} className={`px-3 py-1 rounded ${currentPage===i+1?'bg-blue-400 text-white':'bg-gray-200 text-gray-700'}`}>{i+1}</button>)}
-                    </div>}
-                </> :
-                <div>
-                    {bloodBanks.map(b=>(
-                        <div key={b.name} className="bg-white rounded-xl shadow-md p-4 mb-3 border-l-4 border-olive hover:shadow-lg transition-shadow">
-                            <div className="flex justify-between items-center mb-2">
-                                <h3 className="font-bold text-lg text-gray-800">{b.name}</h3>
-                                <span className="text-gray-600 text-sm">{b.place}</span>
-                            </div>
-                            <div className="flex gap-2">
-                                <button onClick={()=>handleCall(b.phone)} className="flex-1 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all hover:opacity-90" style={{backgroundColor:'#6b8e23'}}><Phone size={18}/> Call</button>
-                                <button onClick={()=>handleShare(b)} className="flex-1 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all hover:opacity-90" style={{backgroundColor:'#87ceeb'}}><Share2 size={18}/> Share</button>
-                            </div>
-                        </div>
-                    ))}
-                </div>}
-            </div>
-
-            {/* Fixed Be a Buddy Button */}
-            <button onClick={()=>setShowBeABuddy(true)} className="fixed bottom-16 right-4 bg-red-600 text-white px-6 py-3 rounded-full shadow-lg font-semibold z-50 hover:opacity-90 transition-opacity">Be a Buddy</button>
-
-            {/* Footer */}
-            <div className="fixed bottom-0 left-0 w-full bg-gray-800 text-white text-center py-2 text-sm z-40">Developed by Navas Abdulkader</div>
-
-            {showBeABuddy && <BeABuddyForm />}
-        </div>
-    );
-};
-
-ReactDOM.render(<BloodDonorApp />, document.getElementById('app'));
-</script>
+    ReactDOM.render(<BloodDonorApp />, document.getElementById('app'));
+  </script>
 </body>
 </html>
