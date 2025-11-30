@@ -86,7 +86,25 @@
         <path d="m21 21-4.35-4.35"></path>
       </svg>
     );
-
+    const submitToSheet = async (formData) => {
+        try {
+          await fetch("https://script.google.com/macros/s/AKfycbx2SV0qwwEMwSmQwCaTp8A9htEuQ37HzkZhcIuO5SJTs9ZWAvyintKSzpCZD9lPchO_/exec", {
+            method: "POST",
+            mode: "no-cors",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              name: formData.name,
+              bloodGroup: formData.bloodGroup,
+              phone: formData.number,
+              place: formData.place
+            })
+          });
+        } catch (err) {
+          console.error("Submit failed", err);
+        }
+      };
     // --- APP COMPONENT ---
     const BloodDonorApp = () => {
       const [donors, setDonors] = useState([]);
@@ -114,6 +132,7 @@
       const [buddyGroup, setBuddyGroup] = useState('');
       const [buddyMessage, setBuddyMessage] = useState('');
 
+      
       
       useEffect(() => {
         fetch('donors.json')
@@ -176,10 +195,10 @@
       const BeABuddyForm = () => {
         const [formData,setFormData] = useState({name:'',bloodGroup:'',number:'',place:''});
         const handleSubmit = async () => {
-  if(!formData.name || !formData.bloodGroup || !formData.number || !formData.place){
-    alert('Please fill all fields');
-    return;
-  }
+      if(!formData.name || !formData.bloodGroup || !formData.number || !formData.place){
+        alert('Please fill all fields');
+        return;
+        }
 
   // Show temporary message
   alert("Submitting… Please wait");
@@ -196,11 +215,10 @@
         place: formData.place
       })
     });
-
+    await submitToSheet(formData);
     alert(`Thanks ${formData.name}! You are now registered as a Blood Buddy ❤️`);
-
     // Clear & close
-    setFormData({name:'',bloodGroup:'',number:'',place:''});
+    setFormData({ name:'', bloodGroup:'', number:'', place:'' });
     setShowBeABuddy(false);
 
   } catch (error) {
