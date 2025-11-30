@@ -232,15 +232,53 @@
             activeTab==='search' ? <>
               {currentDonors.length ? currentDonors.map(d=><DonorCard key={d.number} donor={d}/>) : <p className="text-center text-gray-500 mt-10">No donors found.</p>}
               {/* Pagination */}
-              {totalPages>1 &&
-                <div className="flex justify-center mt-4 gap-2 flex-wrap">
-                  <button disabled={currentPage===1} onClick={()=>setCurrentPage(p=>p-1)} className="px-3 py-1 rounded border bg-white hover:bg-gray-100">&lt; Prev</button>
-                  {[...Array(totalPages)].map((_,i)=>
-                    <button key={i} onClick={()=>setCurrentPage(i+1)} className={`px-3 py-1 rounded border ${currentPage===i+1?'bg-blue-400 text-white':'bg-white hover:bg-gray-100'}`}>{i+1}</button>
-                  )}
-                  <button disabled={currentPage===totalPages} onClick={()=>setCurrentPage(p=>p+1)} className="px-3 py-1 rounded border bg-white hover:bg-gray-100">Next &gt;</button>
-                </div>
-              }
+              {totalPages > 1 && (
+                  <div className="flex justify-center items-center mt-4 gap-3">
+                    
+                    {/* First Page */}
+                    <button
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage(1)}
+                      className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-40"
+                    >
+                      First
+                    </button>
+                
+                    {/* Previous Page */}
+                    <button
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage(p => p - 1)}
+                      className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-40"
+                    >
+                      ‹ Prev
+                    </button>
+                
+                    {/* Page Indicator */}
+                    <span className="px-3 py-1 text-gray-700">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                
+                    {/* Next Page */}
+                    <button
+                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage(p => p + 1)}
+                      className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-40"
+                    >
+                      Next ›
+                    </button>
+                
+                    {/* Last Page */}
+                    <button
+                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage(totalPages)}
+                      className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-40"
+                    >
+                      Last
+                    </button>
+                
+                  </div>
+                )}
+
             </> :
             activeTab==='bloodbanks' ? bloodBanks.map((b,i)=>(
               <div key={i} className="bg-white rounded-xl shadow-md p-4 mb-3 border-l-4 border-blue-400 hover:shadow-lg transition-shadow">
