@@ -108,7 +108,13 @@
         { name: 'IMA Blood Bank', phone: '+91-0487-2333518', place: 'Thrissur' },
         { name: 'Kerala Institute of Medical Sciences', phone: '+91-0471-3041400', place: 'Trivandrum' }
       ];
+      const [buddyName, setBuddyName] = useState('');
+      const [buddyPhone, setBuddyPhone] = useState('');
+      const [buddyPlace, setBuddyPlace] = useState('');
+      const [buddyGroup, setBuddyGroup] = useState('');
+      const [buddyMessage, setBuddyMessage] = useState('');
 
+      
       useEffect(() => {
         fetch('donors.json')
           .then(res => res.json())
@@ -169,14 +175,39 @@
 
       const BeABuddyForm = () => {
         const [formData,setFormData] = useState({name:'',bloodGroup:'',number:'',place:''});
-        const handleSubmit = () => {
-          if(!formData.name||!formData.bloodGroup||!formData.number||!formData.place){
-            alert('Please fill all fields'); return;
-          }
-          alert(`Thanks ${formData.name}! We'll notify you when needed.`);
-          setFormData({name:'',bloodGroup:'',number:'',place:''});
-          setShowBeABuddy(false);
-        };
+        const handleSubmit = async () => {
+  if(!formData.name || !formData.bloodGroup || !formData.number || !formData.place){
+    alert('Please fill all fields');
+    return;
+  }
+
+  // Show temporary message
+  alert("Submitting… Please wait");
+
+  try {
+    await fetch("https://script.google.com/macros/s/AKfycbzrRUkSgeXgc6kbkG2iiTsG7rlsdCsbj-WH1MauEGCD0PHapyBiOnuNooEc4GdX3Ppp/exec", {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: formData.name,
+        bloodGroup: formData.bloodGroup,
+        phone: formData.number,
+        place: formData.place
+      })
+    });
+
+    alert(`Thanks ${formData.name}! You are now registered as a Blood Buddy ❤️`);
+
+    // Clear & close
+    setFormData({name:'',bloodGroup:'',number:'',place:''});
+    setShowBeABuddy(false);
+
+  } catch (error) {
+    alert("Something went wrong. Please try again.");
+  }
+};
+
         return (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
