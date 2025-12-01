@@ -208,7 +208,7 @@
 
       const handleCall = (number) => window.location.href = `tel:${number}`;
       const handleShare = (donor) => {
-        const message = `Blood Donor Contact:\nName: ${donor.name}\nBlood Group: ${donor.bloodGroup}\nNumber: ${donor.number}\nPlace: ${donor.place}\n\nFor more Donors please check https://rebrad.ly/bloodbuddy`;
+        const message = `Blood Donor Contact:\nName: ${donor.name}\nBlood Group: ${donor.bloodGroup}\nNumber: ${donor.number}\nPlace: ${donor.place}\n\nFor more Donors please check https://rebrand.ly/bloodbuddy`;
         if (navigator.share) navigator.share({ title: 'Blood Donor', text: message });
         else window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
       };
