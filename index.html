@@ -342,9 +342,6 @@
                 ))}
               </>
             )}
-            <a href="https://wa.me/97455237494">
-            Share Your Thoughts on WhatsApp
-          </a>
           </div>
 
           {/* Floating button */}
@@ -353,6 +350,32 @@
           )}
 
           {showBeABuddy && <BeABuddyForm />}
+
+          <!-- WhatsApp Share Button -->
+            <div style="text-align: center; margin: 20px 0;">
+              <a 
+                href="https://wa.me/97455237494?text=I%20want%20to%20share%20my%20thoughts%20about%20the%20Blood%20Buddy%20app" 
+                target="_blank" 
+                style="
+                  display: inline-block;
+                  background-color: #25D366;
+                  color: white;
+                  font-weight: bold;
+                  padding: 12px 24px;
+                  border-radius: 50px;
+                  text-decoration: none;
+                  font-family: Arial, sans-serif;
+                  font-size: 16px;
+                  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                  transition: background-color 0.3s, transform 0.2s;
+                "
+                onmouseover="this.style.backgroundColor='#1ebe57'; this.style.transform='scale(1.05)';"
+                onmouseout="this.style.backgroundColor='#25D366'; this.style.transform='scale(1)';"
+              >
+                Contact Us on Whatsapp
+              </a>
+            </div>
+
           {/* Developer Footer */}
           <div className="fixed bottom-0 left-0 w-full text-center text-[10px] text-gray-700 py-1 bg-white bg-opacity-80 z-40">
             Developed by Navas Abdulkader
