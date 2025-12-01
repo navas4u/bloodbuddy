@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Blood Buddy - Online Blood Group Directory</title>
+  <title>Blood Buddy - Online Blood Donors Directory</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .olive-gradient { background: linear-gradient(to right, #6b8e23, #556b2f); }
@@ -208,7 +208,7 @@
 
       const handleCall = (number) => window.location.href = `tel:${number}`;
       const handleShare = (donor) => {
-        const message = `Blood Donor Contact:\nName: ${donor.name}\nBlood Group: ${donor.bloodGroup}\nNumber: ${donor.number}\nPlace: ${donor.place}`;
+        const message = `Blood Donor Contact:\nName: ${donor.name}\nBlood Group: ${donor.bloodGroup}\nNumber: ${donor.number}\nPlace: ${donor.place}\n\nFor more Donors please check https://rebrad.ly/bloodbuddy`;
         if (navigator.share) navigator.share({ title: 'Blood Donor', text: message });
         else window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
       };
