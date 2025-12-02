@@ -72,35 +72,39 @@
 
     /* ========== helpers: sanitize + dedupe ========== */
     const sanitizeAndDedupe = (rawArray = []) => {
-      if (!Array.isArray(rawArray)) return [];
-      const seen = new Set();
-      const out = [];
-
-      for (let i = 0; i < rawArray.length; i++) {
-        const it = rawArray[i];
-        if (!it || typeof it !== 'object') continue; // drop non-objects
-        // normalize phone: keep as string and trim
-        const number = it.number ? String(it.number).trim() : '';
-        const name = it.name ? String(it.name).trim() : '';
-        const bloodGroup = it.bloodGroup ? String(it.bloodGroup).trim() : '';
-        const place = it.place ? String(it.place).trim() : '';
-
-        // Use phone as primary unique key; fall back to name+place
-        const key = number || (name + '|' + place);
-        if (seen.has(key)) continue;
-        seen.add(key);
-
-        out.push({
-          name,
-          bloodGroup,
-          number,
-          place
-        });
+  if (!Array.isArray(rawArray)) return rawArray || []; // Return as-is for debugging
+  
+  const seen = new Set();
+  const result = [];
+  
+  for (const item of rawArray) {
+    if (!item || typeof item !== 'object') continue;
+    
+    const name = item.name ? String(item.name).trim() : '';
+    const number = item.number ? String(item.number).trim().replace(/\s+/g, '') : '';
+    
+    // Only check for duplicates if BOTH name and number exist
+    if (name && number) {
+      const key = `${name.toLowerCase()}|${number}`;
+      if (seen.has(key)) {
+        console.log('Skipping duplicate:', name, number);
+        continue; // Skip exact duplicate
       }
-
-      return out;
-    };
-
+      seen.add(key);
+    }
+    
+    // Always add to result (even if no name or number - you can filter later if needed)
+    result.push({
+      name: name,
+      bloodGroup: item.bloodGroup ? String(item.bloodGroup).trim() : '',
+      number: number,
+      place: item.place ? String(item.place).trim() : ''
+    });
+  }
+  
+  console.log(`Loaded ${result.length} of ${rawArray.length} entries`);
+  return result;
+};
     /* ========== submit to Google Sheet (unchanged) ========== */
     const submitToSheet = async (formData) => {
       try {
